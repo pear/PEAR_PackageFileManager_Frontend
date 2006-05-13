@@ -20,8 +20,8 @@ list of dependencies (packages, extensions), and specific files roles.
   <email>pear@laurent-laville.org</email>
   <active>yes</active>
  </lead>
- <date>2006-05-04</date>
- <time>22:33:28</time>
+ <date>2006-05-13</date>
+ <time>15:24:02</time>
  <version>
   <release>0.3.0</release>
   <api>0.3.0</api>
@@ -36,15 +36,22 @@ list of dependencies (packages, extensions), and specific files roles.
 Since 0.2.0
 More tags of package.xml version 2.0 are now fully supported :
 - group
-- installconditions</notes>
+- installconditions
+
+TODO 
+- rewrite config file management (too much complex)</notes>
  <contents>
   <dir baseinstalldir="PEAR/PackageFileManager" name="/">
+   <dir name="examples">
+    <file name="PFM_MaintainersList.php" role="doc" />
+    <file name="THL_Infos.php" role="doc" />
+   </dir> <!-- /examples -->
    <dir name="Frontend">
     <file name="Decorator.php" role="php" />
-   </dir> <!-- //Frontend -->
+   </dir> <!-- /Frontend -->
    <file name="Frontend.php" role="php">
-    <tasks:replace from="@package_name@" to="name" type="package-info" />
     <tasks:replace from="@package_version@" to="version" type="package-info" />
+    <tasks:replace from="@package_name@" to="name" type="package-info" />
     <tasks:replace from="@api_version@" to="version" type="package-info" />
    </file>
   </dir> <!-- / -->
@@ -92,14 +99,17 @@ More tags of package.xml version 2.0 are now fully supported :
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2006-05-04</date>
+   <date>2006-05-13</date>
    <license uri="http://www.php.net/license/3_01.txt">PHP License 3.01</license>
    <notes>Initial PEAR release after last step of proposal http://pear.php.net/pepr/pepr-proposal-show.php?id=381
 
 Since 0.2.0
 More tags of package.xml version 2.0 are now fully supported :
 - group
-- installconditions</notes>
+- installconditions
+
+TODO 
+- rewrite config file management (too much complex)</notes>
   </release>
   <release>
    <version>

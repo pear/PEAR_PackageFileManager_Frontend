@@ -25,7 +25,7 @@ list of dependencies (packages, extensions), and specific files roles.
   </maintainers>
  <release>
   <version>0.3.0</version>
-  <date>2006-05-04</date>
+  <date>2006-05-13</date>
   <license>PHP License 3.01</license>
   <state>alpha</state>
   <notes>Initial PEAR release after last step of proposal http://pear.php.net/pepr/pepr-proposal-show.php?id=381
@@ -34,6 +34,9 @@ Since 0.2.0
 More tags of package.xml version 2.0 are now fully supported :
 - group
 - installconditions
+
+TODO 
+- rewrite config file management (too much complex)
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.2.0" optional="no"/>
@@ -44,12 +47,16 @@ More tags of package.xml version 2.0 are now fully supported :
   </deps>
   <filelist>
    <dir name="/" baseinstalldir="PEAR/PackageFileManager">
+    <dir name="examples">
+     <file role="doc" name="PFM_MaintainersList.php"/>
+     <file role="doc" name="THL_Infos.php"/>
+    </dir> <!-- /examples -->
     <dir name="Frontend">
      <file role="php" name="Decorator.php"/>
     </dir> <!-- /Frontend -->
     <file role="php" name="Frontend.php">
-     <replace from="@package_name@" to="name" type="package-info"/>
      <replace from="@package_version@" to="version" type="package-info"/>
+     <replace from="@package_name@" to="name" type="package-info"/>
      <replace from="@api_version@" to="version" type="package-info"/>
     </file>
    </dir> <!-- / -->
@@ -58,7 +65,7 @@ More tags of package.xml version 2.0 are now fully supported :
  <changelog>
    <release>
     <version>0.3.0</version>
-    <date>2006-05-04</date>
+    <date>2006-05-13</date>
     <license>PHP License 3.01</license>
     <state>alpha</state>
     <notes>Initial PEAR release after last step of proposal http://pear.php.net/pepr/pepr-proposal-show.php?id=381
@@ -67,6 +74,9 @@ Since 0.2.0
 More tags of package.xml version 2.0 are now fully supported :
 - group
 - installconditions
+
+TODO 
+- rewrite config file management (too much complex)
     </notes>
    </release>
    <release>
