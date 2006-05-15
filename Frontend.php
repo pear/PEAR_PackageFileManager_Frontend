@@ -24,55 +24,6 @@ require_once 'PEAR/Config.php';
 require_once 'Config.php';
 
 /**
- * @since  0.1.0
- * @access public
- */
-function realpathnix($path)
-{
-    if (!is_string($path)) {
-        $path = false;
-    } else {
-        $path = trim($path);
-        if (file_exists($path)) {
-            $path = str_replace(DIRECTORY_SEPARATOR, '/', realpath($path));
-            if (is_dir($path) && substr($path, -1, 1) !== '/') {
-                $path .= '/';
-            }
-        } else {
-            $path = false;
-        }
-    }
-    return $path;
-}
-
-/**
- * array_merge_recursive2()
- *
- * Similar to array_merge_recursive but keyed-valued are always overwritten.
- * Priority goes to the 2nd array.
- *
- * @param  array  $paArray1
- * @param  array  $paArray2
- * @return array
- * @static
- * @access public
- * @since  0.1.0
- * @author brian at vermonster dot com
- * @link   http://www.php.net/manual/en/function.array-merge-recursive.php#42663
- */
-function array_merge_recursive2($paArray1, $paArray2)
-{
-   if (!is_array($paArray1) or !is_array($paArray2)) {
-       return $paArray2;
-   }
-   foreach ($paArray2 as $sKey2 => $sValue2) {
-       $paArray1[$sKey2] = array_merge_recursive2(@$paArray1[$sKey2], $sValue2);
-   }
-   return $paArray1;
-}
-
-
-/**
  * Instance of PEAR_PackageFileManager_Frontend_{driver} class.
  *
  * @var    object
@@ -400,7 +351,7 @@ class PEAR_PackageFileManager_Frontend
         );
 
         if (isset($custom)) {
-            $options = array_merge_recursive2($default, $custom);
+            $options = $this->array_merge_recursive($default, $custom);
             $source = array('settings' => $options);
         } else {
             $source = array('settings' => $default);
@@ -923,18 +874,23 @@ class PEAR_PackageFileManager_Frontend
     {
         switch ($type) {
             case 'package':
+            case 'page1':
                 $def = $this->_getPackage();
                 break;
             case 'release':
+            case 'page2':
                 $def = $this->_getRelease();
                 break;
             case 'maintainers':
+            case 'page3':
                 $def = $this->_getMaintainers();
                 break;
             case 'dependencies':
+            case 'page4':
                 $def = $this->_getDependencies();
                 break;
             case 'replacements':
+            case 'page5':
                 $def = $this->_getReplacements();
                 break;
             default:
@@ -996,14 +952,14 @@ class PEAR_PackageFileManager_Frontend
      */
     function _getPackage()
     {
-        $packagedirectory  = realpathnix($this->packagedirectory);
-        $pathtopackagefile = realpathnix($this->pathtopackagefile);
+        $packagedirectory  = $this->realpathnix($this->packagedirectory);
+        $pathtopackagefile = $this->realpathnix($this->pathtopackagefile);
         $baseinstalldir = $this->getOption(array('settings', 'pfm', 'baseinstalldir'));
 
         if ($packagedirectory === false) {
             $optionsUpdate = array(
                 'pathtopackagefile' => $pathtopackagefile ? dirname($pathtopackagefile) : false,
-                'packagedirectory'  => realpathnix('.'),
+                'packagedirectory'  => $this->realpathnix('.'),
                 'baseinstalldir'    => $baseinstalldir
             );
             if (is_file($pathtopackagefile)) {
@@ -1645,6 +1601,54 @@ class PEAR_PackageFileManager_Frontend
     {
         trigger_error('run is an abstract method that must be ' .
                       'overridden in the child class', E_USER_ERROR);
+    }
+
+    /**
+     * @since  0.1.0
+     * @access public
+     */
+    function realpathnix($path)
+    {
+        if (!is_string($path)) {
+            $path = false;
+        } else {
+            $path = trim($path);
+            if (file_exists($path)) {
+                $path = str_replace(DIRECTORY_SEPARATOR, '/', realpath($path));
+                if (is_dir($path) && substr($path, -1, 1) !== '/') {
+                    $path .= '/';
+                }
+            } else {
+                $path = false;
+            }
+        }
+        return $path;
+    }
+
+    /**
+     * array_merge_recursive()
+     *
+     * Similar to array_merge_recursive but keyed-valued are always overwritten.
+     * Priority goes to the 2nd array.
+     *
+     * @param  array  $paArray1
+     * @param  array  $paArray2
+     * @return array
+     * @static
+     * @access public
+     * @since  0.1.0
+     * @author brian at vermonster dot com
+     * @link   http://www.php.net/manual/en/function.array-merge-recursive.php#42663
+     */
+    function array_merge_recursive($paArray1, $paArray2)
+    {
+       if (!is_array($paArray1) or !is_array($paArray2)) {
+           return $paArray2;
+       }
+       foreach ($paArray2 as $sKey2 => $sValue2) {
+           $paArray1[$sKey2] = $this->array_merge_recursive(@$paArray1[$sKey2], $sValue2);
+       }
+       return $paArray1;
     }
 }
 ?>
