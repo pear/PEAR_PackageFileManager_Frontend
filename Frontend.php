@@ -71,7 +71,7 @@ $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'] =
         PEAR_PACKAGEFILEMANAGER_FRONTEND_WRONG_CONFIG =>
             'Your preference data source is invalid. Uses all default values instead',
         PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION =>
-            'Option "%option%" can\'t be located',
+            'Unknown option "%option%"',
         PEAR_PACKAGEFILEMANAGER_FRONTEND_WRONG_USERS =>
             'No such list of users "%users%"',
         PEAR_PACKAGEFILEMANAGER_FRONTEND_NOUSER =>
@@ -122,13 +122,26 @@ class PEAR_PackageFileManager_Frontend
     var $pathtopackagefile;
 
     /**
-     * Contains the user settings preferences
+     * Frontend options set in the configuration file.
      *
-     * @var    object  PEAR::Config
-     * @since  0.1.0
+     * @var    array
+     * @since  0.3.0
      * @access private
      */
-    var $_conf;
+    var $_options = array(
+        'outputdirectory'    => false,
+        'roles'              => array(),
+        'dir_roles'          => array(),
+        'changelogoldtonew'  => false,
+        'simpleoutput'       => false,
+        'exportcompatiblev1' => false,
+        'baseinstalldir'     => '',
+        'package_type'       => array(),
+        'stability'          => array(),
+        'maintainer_roles'   => array(),
+        'plugingenerator'    => array(),
+        'filelistgenerator'  => ''
+        );
 
     /**
      * Instance of a log handler (class) that support a log() method
@@ -238,15 +251,10 @@ class PEAR_PackageFileManager_Frontend
     function loadPreferences(&$config)
     {
         // user options configuration (temporary)
-        $this->_conf = new Config();
+        $conf = new Config();
 
-        // source is Config_Container
-        if (strcasecmp(get_class($config), 'config_container') == 0) {
-            $root =& $this->_conf->getRoot();
-            $res =& $root->addItem($config);
-            $this->log('debug', 'Load preferences from a config_container');
         // source is Array
-        } elseif (is_array($config)) {
+        if (is_array($config)) {
             list($source, $type, $options) = $config;
             if (is_string($source)) {
                 $this->log('debug', "Load preferences from file \"$source\" ($type)");
@@ -257,10 +265,18 @@ class PEAR_PackageFileManager_Frontend
                 // in case no parser options are given
                 $options = array();
             }
-            $res =& $this->_conf->parseConfig($source, $type, $options);
-            $root =& $this->_conf->getRoot();
+            $res =& $conf->parseConfig($source, $type, $options);
+            $fail = PEAR::isError($res);
+
+        } elseif (is_bool($config) && $config === false) {
+            $fail = false;
+            $custom = array();
+
+        } else {
+            $fail = true;
         }
-        if (PEAR::isError($res)) {
+
+        if ($fail) {
             PEAR_ErrorStack::staticPush('@package_name@',
                 PEAR_PACKAGEFILEMANAGER_FRONTEND_CANTOPEN_CONFIG, 'error',
                 array('error' => $res->getMessage() ),
@@ -269,96 +285,41 @@ class PEAR_PackageFileManager_Frontend
             return false;
         }
 
-        $pfmSection =& $root->getItem('section', 'pfm');
-        $guiSection =& $root->getItem('section', 'gui');
-
-        if ($pfmSection || $guiSection) {
-            $attrs = $root->getAttributes();
-            // get user config version if available
-            if (!isset($attrs['version'])) {
-                // or apply default value (API version)
-                $attrs['version'] = '@api_version@';
-            }
-            $root->setAttributes(null);
-            $settings =& $root->createSection('root2', $attrs);
-
-            if ($pfmSection) {
-                $pfmSection->removeItem();
-                $settings->addItem($pfmSection);
-            }
-            if ($guiSection) {
-                $guiSection->removeItem();
-                $settings->addItem($guiSection);
-            }
-        }
-
-        $virtualRoot =& $root->getItem('section');
-        $virtualRoot->setName('settings');
-        $attrs = $virtualRoot->getAttributes();
-        // get user config version if available
-        if (!isset($attrs['version'])) {
-            // or apply default value (API version)
-            $attrs['version'] = '@api_version@';
-            $virtualRoot->updateAttributes($attrs);
-        }
-
-        // By setting the new root, we will remove all others directives included on import.
-        // Only directives below 'pfm' and 'gui' sections are supported
-        $this->_conf->setRoot($virtualRoot);
-
-        $directives = 0;
-        $pfmSection =& $virtualRoot->getItem('section', 'pfm');
-        if ($pfmSection && $pfmSection->countChildren() > 0) {
-            $directives++;
-        }
-        $guiSection =& $virtualRoot->getItem('section', 'gui');
-        if ($guiSection && $guiSection->countChildren() > 0) {
-            $directives++;
-        }
-
-        if ($directives == 0) {
-            // no user preferences given, all defaults options are applied
-            PEAR_ErrorStack::staticPush('@package_name@',
-                PEAR_PACKAGEFILEMANAGER_FRONTEND_EMPTY_CONFIG, 'warning',
-                array(),
-                $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'][PEAR_PACKAGEFILEMANAGER_FRONTEND_EMPTY_CONFIG]
-                );
-        } else {
-            $options = $virtualRoot->toArray();
-            $custom = $options['settings'];
+        if  (!isset($custom)) {
+            $root =& $conf->getRoot();
+            $options = $root->toArray(false);
+            $custom = $options['root']['settings'];
         }
 
         // default options
         $pfm = new PEAR_PackageFileManager2();
         $pfmOptions = $pfm->getOptions();
         $default = array(
-            'pfm' => array(
-                'outputdirectory'    => $pfmOptions['outputdirectory'],
-                'roles'              => $pfmOptions['roles'],
-                'dir_roles'          => $pfmOptions['dir_roles'],
-                'changelogoldtonew'  => $pfmOptions['changelogoldtonew'],
-                'simpleoutput'       => $pfmOptions['simpleoutput'],
-                'exportcompatiblev1' => false,
-                'baseinstalldir'     => '/',
-                'package_type'       => array('php','extsrc','extbin'),
-                'stability'          => array('snapshot','devel','alpha','beta','stable'),
-                'maintainer_roles'   => array('lead','developer','contributor','helper'),
-                'filelistgenerator'  => array('File', 'Cvs', 'Svn', 'Perforce'),
-                ),
-            'gui' => array(
-                'actions' => array('display' => 'ActionDisplay', 'process' => 'ActionProcess', 'dump' => false)
-                )
+            'outputdirectory'    => $pfmOptions['outputdirectory'],
+            'roles'              => $pfmOptions['roles'],
+            'dir_roles'          => $pfmOptions['dir_roles'],
+            'changelogoldtonew'  => $pfmOptions['changelogoldtonew'],
+            'simpleoutput'       => $pfmOptions['simpleoutput'],
+            'exportcompatiblev1' => false,
+            'baseinstalldir'     => '/',
+            'package_type'       => array('php','extsrc','extbin'),
+            'stability'          => array('snapshot','devel','alpha','beta','stable'),
+            'maintainer_roles'   => array('lead','developer','contributor','helper'),
+            'plugingenerator'    => array('File', 'Cvs', 'Svn', 'Perforce'),
+            'filelistgenerator'  => $pfmOptions['filelistgenerator']
         );
 
-        if (isset($custom)) {
-            $options = $this->array_merge_recursive($default, $custom);
-            $source = array('settings' => $options);
+        if (count($custom)) {
+            // hack for PEAR::Config that cannot parse correctly boolean for XML container
+            foreach ($this->_options as $kdef => $vdef) {
+                if (is_bool($this->_options[$kdef]) && empty($custom[$kdef])) {
+                    $custom[$kdef] = false;
+                }
+            } //
+            $this->_options = $this->array_merge_recursive($default, $custom);
         } else {
-            $source = array('settings' => $default);
+            $this->_options = $default;
         }
-        // the final config
-        $this->_conf = new Config();
-        $this->_conf->parseConfig($source, 'phparray');
         return true;
     }
 
@@ -381,7 +342,9 @@ class PEAR_PackageFileManager_Frontend
             $name = array('name' => '');
             $options = array_merge($options, $name);
         }
-        $out = $this->_conf->writeConfig($target, $type, $options);
+        $conf = new Config();
+        $conf->parseConfig($this->_options, 'phpArray');
+        $out = $conf->writeConfig($target, $type, $options);
         if (PEAR::isError($out)) {
             PEAR_ErrorStack::staticPush('@package_name@',
                 PEAR_PACKAGEFILEMANAGER_FRONTEND_CANTCOPY_CONFIG, 'error',
@@ -394,68 +357,62 @@ class PEAR_PackageFileManager_Frontend
     }
 
     /**
-     * Gets a user preference node value using XPATH like format.
+     * Get all user preferences for this frontend
      *
-     * @param  array    $xpath    search format
-     * @param  boolean  $asString return value as a simple string or native config container array
-     * @return mixed
+     * @param  array   $options    Options for config container
+     * @return TRUE on success, FALSE on error
      * @access public
-     * @since  0.1.0
-     * @see    Config_Container::searchPath()
+     * @since  0.3.0
      */
-    function getOption($xpath, $asString = true)
+    function getPreferences()
     {
-        if (!is_array($xpath)) {
-            settype($xpath, 'array');
-        }
-
-        $root =& $this->_conf->getRoot();
-        $directive =& $root->searchPath($xpath);
-
-        if (!$directive) {
-            $option = implode('/', $xpath) ;
-            $err =& PEAR_ErrorStack::staticPush('@package_name@',
-                PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION, 'warning',
-                array('option' => $option),
-                $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'][PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION]
-                );
-            return $err;
-        }
-
-        if ($asString) {
-            $option = $directive->toArray(false);
-            $option = array_values($option);
-            $option = array_shift($option);
-        } else {
-            $option = $directive->toArray();
-        }
-        return $option;
+        return $this->_options;
     }
 
     /**
-     * @return void
-     * @access public
+     * Returns the value of an option from the configuration array.
+     *
+     * @param  string  option name
+     * @return mixed   the option value or false on failure
      * @since  0.1.0
+     * @access public
      */
-    function setOption($xpath, $value)
+    function getOption($option)
     {
-        if (!is_array($xpath)) {
-            settype($xpath, 'array');
+        if (array_key_exists($option, $this->_options)) {
+            return $this->_options[$option];
         }
 
-        $root =& $this->_conf->getRoot();
-        $directive =& $root->searchPath($xpath);
+        PEAR_ErrorStack::staticPush('@package_name@',
+            PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION, 'exception',
+            array('option' => $option),
+            $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'][PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION]
+            );
+        return false;
+    }
 
-        if (!$directive) {
-            $option = implode('/', $xpath) ;
-            PEAR_ErrorStack::staticPush('@package_name@',
-                PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION, 'warning',
-                array('option' => $option),
-                $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'][PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION]
-                );
+    /**
+     * Sets an option after the configuration array has been loaded.
+     *
+     * @param  string   option name
+     * @param  mixed    value for the option
+     * @return bool  true on success or false on failure
+     * @since  0.1.0
+     * @access public
+     */
+    function setOption($option, $value)
+    {
+        if (array_key_exists($option, $this->_options)) {
+            $this->_options[$option] = $value;
+            return true;
         }
 
-        $directive->setContent($value);
+        PEAR_ErrorStack::staticPush('@package_name@',
+            PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION, 'exception',
+            array('option' => $option),
+            $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'][PEAR_PACKAGEFILEMANAGER_FRONTEND_NOOPTION]
+            );
+        return false;
     }
 
     /**
@@ -797,8 +754,8 @@ class PEAR_PackageFileManager_Frontend
         if (!isset($sess['roles'])) {
             $filelist = $this->getFileList();
             $sess['roles'] = array();
-            $settings_dir_roles = $this->getOption(array('settings', 'pfm', 'dir_roles'));
-            $settings_roles = $this->getOption(array('settings', 'pfm', 'roles'));
+            $settings_dir_roles = $this->getOption('dir_roles');
+            $settings_roles = $this->getOption('roles');
             $ext_roles = array('*' => $settings_roles['*']);
             $dir_roles = array();
             $exts = array();
@@ -954,7 +911,7 @@ class PEAR_PackageFileManager_Frontend
     {
         $packagedirectory  = $this->realpathnix($this->packagedirectory);
         $pathtopackagefile = $this->realpathnix($this->pathtopackagefile);
-        $baseinstalldir = $this->getOption(array('settings', 'pfm', 'baseinstalldir'));
+        $baseinstalldir = $this->getOption('baseinstalldir');
 
         if ($packagedirectory === false) {
             $optionsUpdate = array(
@@ -1049,7 +1006,7 @@ class PEAR_PackageFileManager_Frontend
             'packageName'        => $pkg->getPackage(),
             'packageSummary'     => $pkg->getSummary(),
             'packageDescription' => $pkg->getDescription(),
-            'packageOutputDir'   => $this->getOption(array('settings', 'pfm', 'outputdirectory')),
+            'packageOutputDir'   => $this->getOption('outputdirectory'),
             'baseInstallDir'     => $baseinstalldir
             ));
         return $def;
@@ -1244,7 +1201,7 @@ class PEAR_PackageFileManager_Frontend
                 $parts = pathinfo($contents['attribs']['name']);
                 if (!in_array($parts['dirname'], $dirs)) {
                     $dirs[] = $parts['dirname'];
-                    $dir_roles = $this->getOption(array('settings', 'pfm', 'dir_roles'));
+                    $dir_roles = $this->getOption('dir_roles');
                     if (array_key_exists($parts['dirname'], $dir_roles)) {
                         $role = $dir_roles[$parts['dirname']];
                     } else {
@@ -1305,9 +1262,8 @@ class PEAR_PackageFileManager_Frontend
      */
     function getPageName($pageId)
     {
-        $pagePath = array('settings', 'gui', 'pages', array('page', array('id' => $pageId)));
-        $page = $this->getOption($pagePath, false);
-        return $page['page']['@']['name'];
+        $keys = $this->multi_array_search($pageId, $this->_pages);
+        return $this->_pages[$keys[0]]['@']['name'];
     }
 
     /**
@@ -1569,7 +1525,6 @@ class PEAR_PackageFileManager_Frontend
         if (isset($debug) && $debug) {
             return $preview;
         }
-        //$options = $pkg->getOptions();
         $outputdir = !empty($options['outputdirectory']) ? $options['outputdirectory'] : $options['packagedirectory'];
         $packagexml = $outputdir . $options['packagefile'];
         return $packagexml;
@@ -1649,6 +1604,57 @@ class PEAR_PackageFileManager_Frontend
            $paArray1[$sKey2] = $this->array_merge_recursive(@$paArray1[$sKey2], $sValue2);
        }
        return $paArray1;
+    }
+
+    /**
+     * Multi-Dimensional Array Search
+     *
+     * <code>
+     *   <?php
+     *   $foo[1]['a']['xx'] = 'bar 1';
+     *   $foo[1]['b']['xx'] = 'bar 2';
+     *   $foo[2]['a']['bb'] = 'bar 3';
+     *   $foo[2]['a']['yy'] = 'bar 4';
+     *   $foo['info'][1] = 'bar 5';
+     *
+     *   $result = multi_array_search('bar 3', $foo);
+     *   print_r($result);
+     *   ?>
+     * </code>
+     * <pre>
+     *   Output:
+     *   Array
+     *   (
+     *        [0] => 2
+     *        [1] => a
+     *        [2] => bb
+     *   )
+     * </pre>
+     *
+     * @author scripts at webfire dot org
+     * @since  0.3.0
+     * @link   http://www.php.net/manual/en/function.array-search.php#47116
+     */
+    function multi_array_search($search_value, $the_array)
+    {
+       if (is_array($the_array)) {
+
+           foreach ($the_array as $key => $value) {
+               $result = $this->multi_array_search($search_value, $value);
+               if (is_array($result)) {
+                   $return = $result;
+                   array_unshift($return, $key);
+                   return $return;
+
+               } elseif ($result == true) {
+                   $return[] = $key;
+                   return $return;
+               }
+           }
+           return false;
+       } else {
+           return ($search_value == $the_array);
+       }
     }
 }
 ?>
