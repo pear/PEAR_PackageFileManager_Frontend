@@ -312,8 +312,15 @@ class PEAR_PackageFileManager_Frontend
         if (count($custom)) {
             // hack for PEAR::Config that cannot parse correctly boolean for XML container
             foreach ($this->_options as $kdef => $vdef) {
-                if (is_bool($this->_options[$kdef]) && empty($custom[$kdef])) {
-                    $custom[$kdef] = false;
+                if (is_bool($this->_options[$kdef])) {
+                    if (empty($custom[$kdef])) {
+                        $custom[$kdef] = false;
+                    } else {
+                        $a = $custom[$kdef];
+                        $a = eregi_replace('^false$', '0', trim($a));
+                        $a = eregi_replace('^true$' , '1', trim($a));
+                        $custom[$kdef] = (bool) $a;
+                    }
                 }
             } //
             $this->_options = $this->array_merge_recursive($default, $custom);
