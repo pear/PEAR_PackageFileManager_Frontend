@@ -1124,7 +1124,7 @@ class PEAR_PackageFileManager_Frontend
                     } else {
                         $name = $info['package'];
                     }
-                    $sess['packages'][$channel][$name] = $name;
+                    $sess['packages'][$channel][] = $name;
                 }
             } else {
                 $sess['packages'][$channel] = array();
