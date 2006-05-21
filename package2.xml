@@ -20,26 +20,30 @@ list of dependencies (packages, extensions), and specific files roles.
   <email>pear@laurent-laville.org</email>
   <active>yes</active>
  </lead>
- <date>2006-05-13</date>
- <time>15:24:02</time>
+ <date>2006-05-21</date>
+ <time>15:26:51</time>
  <version>
-  <release>0.3.0</release>
-  <api>0.3.0</api>
+  <release>0.4.0</release>
+  <api>0.4.0</api>
  </version>
  <stability>
   <release>alpha</release>
   <api>alpha</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License 3.01</license>
- <notes>Initial PEAR release after last step of proposal http://pear.php.net/pepr/pepr-proposal-show.php?id=381
+ <notes>* news
+- new api : getPreferences() to retrieve easily user options loaded.
+- options filelistgenerator was renamed to plugingenerator, and new filelistgenerator begin equal to PFM same option.
+- new configuration structure (more simple)
+  gui options are now only supported by PFM FE Web.
+- setOption() and getOption() did not used any more the xpath ability of PEAR::Config
 
-Since 0.2.0
-More tags of package.xml version 2.0 are now fully supported :
-- group
-- installconditions
-
-TODO 
-- rewrite config file management (too much complex)</notes>
+* improvements
+- realpathnix() and array_merge_recursive2() are static class methods so they don&apos;t pollute the global namespace.
+- loadPreferences() is no more mandatory, and you can reload default options.
+- add a hack for PEAR::Config that cannot parse correctly boolean for XML container.
+- reduces amount of data stored in session
+ </notes>
  <contents>
   <dir baseinstalldir="PEAR/PackageFileManager" name="/">
    <dir name="examples">
@@ -47,12 +51,14 @@ TODO
     <file name="THL_Infos.php" role="doc" />
    </dir> <!-- /examples -->
    <dir name="Frontend">
-    <file name="Decorator.php" role="php" />
+    <file name="Decorator.php" role="php">
+     <tasks:replace from="@package_version@" to="version" type="package-info" />
+    </file>
    </dir> <!-- /Frontend -->
    <file name="Frontend.php" role="php">
     <tasks:replace from="@package_version@" to="version" type="package-info" />
     <tasks:replace from="@package_name@" to="name" type="package-info" />
-    <tasks:replace from="@api_version@" to="version" type="package-info" />
+    <tasks:replace from="@api_version@" to="api-version" type="package-info" />
    </file>
   </dir> <!-- / -->
  </contents>
@@ -92,6 +98,31 @@ TODO
  <changelog>
   <release>
    <version>
+    <release>0.4.0</release>
+    <api>0.4.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2006-05-21</date>
+   <license uri="http://www.php.net/license/3_01.txt">PHP License 3.01</license>
+   <notes>* news
+- new api : getPreferences() to retrieve easily user options loaded.
+- options filelistgenerator was renamed to plugingenerator, and new filelistgenerator begin equal to PFM same option.
+- new configuration structure (more simple)
+  gui options are now only supported by PFM FE Web.
+- setOption() and getOption() did not used any more the xpath ability of PEAR::Config
+
+* improvements
+- realpathnix() and array_merge_recursive2() are static class methods so they don&apos;t pollute the global namespace.
+- loadPreferences() is no more mandatory, and you can reload default options.
+- add a hack for PEAR::Config that cannot parse correctly boolean for XML container.
+- reduces amount of data stored in session
+   </notes>
+  </release>
+  <release>
+   <version>
     <release>0.3.0</release>
     <api>0.3.0</api>
    </version>
@@ -108,7 +139,7 @@ More tags of package.xml version 2.0 are now fully supported :
 - group
 - installconditions
 
-TODO 
+TODO
 - rewrite config file management (too much complex)</notes>
   </release>
   <release>
