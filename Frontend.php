@@ -1375,6 +1375,7 @@ class PEAR_PackageFileManager_Frontend
         // get valid options from page 4
         if (isset($sess['dependencies'])) {
             foreach ($sess['dependencies'] as $dependency) {
+                unset($extension, $type, $name, $channel, $min, $max, $recommended, $exclude);
                 extract($dependency);
                 if (empty($extension)) {
                     if ($type == 'group') {
