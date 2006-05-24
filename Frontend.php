@@ -1156,7 +1156,12 @@ class PEAR_PackageFileManager_Frontend
                         $dep = $dependency;
                         $dep['type'] = $dgroup;
                         $dep['group'] = isset($group) ? $group : false;
-                        $dep['name'] = $dependency['name'];
+                        if ($dtype == 'package') {
+                            $dep['name'] = $dependency['name'];
+                        } else {
+                            $dep['extension'] = $dependency['name'];
+                            unset($dep['name']);
+                        }
                         if (is_array($dependency['exclude'])) {
                             $dep['exclude'] = $dependency['exclude'][0];
                         }
@@ -1375,9 +1380,9 @@ class PEAR_PackageFileManager_Frontend
         // get valid options from page 4
         if (isset($sess['dependencies'])) {
             foreach ($sess['dependencies'] as $dependency) {
-                unset($max, $recommended, $exclude);
+                unset($min, $max, $recommended, $exclude, $extension);
                 extract($dependency);
-                if (empty($extension)) {
+                if (!isset($extension)) {
                     if ($type == 'group') {
                         $pkg->addDependencyGroup($group['name'], $group['hint']);
                     }
