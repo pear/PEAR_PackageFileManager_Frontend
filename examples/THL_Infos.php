@@ -21,10 +21,13 @@ require_once 'PEAR/PackageFileManager/Frontend.php';
  */
 class PEAR_PackageFileManager_Frontend_Null extends PEAR_PackageFileManager_Frontend
 {
-
     function PEAR_PackageFileManager_Frontend_Null($driver, $packagedirectory, $pathtopackagefile)
     {
         parent::PEAR_PackageFileManager_Frontend($driver, $packagedirectory, $pathtopackagefile);
+
+        // load all default preferences
+        $config = false;
+        $this->loadPreferences($config);
     }
 }
 
@@ -47,15 +50,11 @@ function varDump($var)
 
 session_start();
 
-// configuration options
-$conf['pfm']['baseinstalldir'] = 'Text';
-$config = array($conf, 'phparray');
-
 // where to find package sources
 $pkgDir = 'E:/PEAR/Text/Text_Highlighter-0.6.9';
 
 $pfmfe =& PEAR_PackageFileManager_Frontend::singleton('Null', $pkgDir);
-$pfmfe->loadPreferences($config);
+$pfmfe->setOption('baseinstalldir', 'Text');
 if ($pfmfe->hasErrors()) {
     $errors = $pfmfe->getErrors();
     varDump($errors);
@@ -77,4 +76,8 @@ varDump($def);
 echo '<h1>Dependencies </h1>';
 $def = $pfmfe->getDefaults('dependencies');
 varDump($def);
+
+// cleansweep session data
+$pfmfe->container(true);
+session_destroy();
 ?>

@@ -21,10 +21,13 @@ require_once 'PEAR/PackageFileManager/Frontend.php';
  */
 class PEAR_PackageFileManager_Frontend_Null extends PEAR_PackageFileManager_Frontend
 {
-
     function PEAR_PackageFileManager_Frontend_Null($driver, $packagedirectory, $pathtopackagefile)
     {
         parent::PEAR_PackageFileManager_Frontend($driver, $packagedirectory, $pathtopackagefile);
+
+        // load all default preferences
+        $config = false;
+        $this->loadPreferences($config);
     }
 }
 
@@ -61,18 +64,13 @@ function haltOnError($err)
 
 session_start();
 
-// configuration options
-$conf['pfm']['baseinstalldir'] = 'PEAR';
-$config = array($conf, 'phparray');
-
-
 // where to find package sources
 $pkgDir = 'd:/php/pear/PEAR_PackageFileManager';
 
 PEAR_ErrorStack::staticPushCallback('haltOnError');
 
 $pfmfe =& PEAR_PackageFileManager_Frontend::singleton('Null', $pkgDir);
-$pfmfe->loadPreferences($config);
+$pfmfe->setOption('baseinstalldir', 'PEAR');
 
 echo '<h1>All maintainers</h1>';
 $maint = $pfmfe->getMaintList();
@@ -90,4 +88,7 @@ echo '<h1>unknown users </h1>';
 $maint = $pfmfe->getMaintList('users');
 varDump($maint);
 
+// cleansweep session data
+$pfmfe->container(true);
+session_destroy();
 ?>
