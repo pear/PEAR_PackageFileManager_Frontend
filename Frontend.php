@@ -963,12 +963,12 @@ class PEAR_PackageFileManager_Frontend
             $pkg->setOptions($optionsUpdate);
             $pkg->setPackageType('php');
             $pkg->setChannel('pear.php.net');
+            $pkg->setPearinstallerDep('1.4.3');
             $source = ' create';
             $packagefile = $optionsUpdate['packagedirectory'] . 'package.xml';
         } else {
             $source = ' import';
         }
-        $pkg->setPearinstallerDep('1.4.3');
         $pkg->setPackageFile($packagefile);
         $source .= " package file '$packagefile'";
         $this->log('debug',
@@ -1107,6 +1107,9 @@ class PEAR_PackageFileManager_Frontend
     function _getDependencies()
     {
         $sess =& $this->container();
+        if (!isset($sess['pfm'])) {
+            $this->_getPackage();
+        }
 
         $pearConfig = new PEAR_Config();
         $pear_install_dir = $pearConfig->get('php_dir');
