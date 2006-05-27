@@ -14,6 +14,7 @@
 
 2006-05-21 Laurent Laville <pear@laurent-laville.org>
 
+    * VERSION: Version 0.4.0 released.
     - reduce amount of data stored in session (see especially dependencies array)
 
 2006-05-20 Laurent Laville <pear@laurent-laville.org>
@@ -33,5 +34,6 @@
 
 2006-05-13 Laurent Laville <pear@laurent-laville.org>
 
+    * VERSION: Version 0.3.0 released.
     - Add full support for 'group' and 'installconditions' package.xml version 2.0 tags
 
