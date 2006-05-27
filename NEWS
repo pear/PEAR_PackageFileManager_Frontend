@@ -1,0 +1,30 @@
+Changes since version 0.4.0 (2006-05-21)
+
+Changes to Frontend.php
+  * bugs:
+  - Avoid to propagate wrong data content to the other package dependencies.
+  - php extension from package dependencies are now detected correctly.
+  - be sure to returns good data when getDefaults('dependencies') is called.
+  - keep good version of pear installer when import a package 2.0
+  - just for a new package from scratch pear installer is set to 1.4.3 minimum
+    due to vunerability found on Nov 4 2005, rather than default 1.4.0b1
+
+Changes since version 0.3.0 (2006-05-13)
+
+Changes to Frontend.php
+  - new api : getPreferences() to retrieve easily user options loaded.
+  - options filelistgenerator was renamed to plugingenerator, and new filelistgenerator
+    begin equal to PFM same option.
+  - new configuration structure (more simple).
+  - setOption() and getOption() did not used any more the xpath ability of PEAR::Config
+  - realpathnix() and array_merge_recursive() are static class methods
+    so they don't pollute the global namespace.
+  - loadPreferences() is no more mandatory, and you can reload default options.
+  - add a hack for PEAR::Config that cannot parse correctly boolean for XML container.
+  - reduces amount of data stored in session
+
+Changes since version 0.2.0 (2006-04-02)
+
+Changes to Frontend.php
+  - Add full support for 'group' and 'installconditions' package.xml version 2.0 tags
+

@@ -1,0 +1,37 @@
+2006-05-25 Laurent Laville <pear@laurent-laville.org>
+
+    * bug fixes:
+    - be sure to returns good data when getDefaults('dependencies') is called.
+    - keep good version of pear installer when import a package 2.0
+    - just for a new package from scratch pear installer is set to 1.4.3 minimum
+      due to vunerability found on Nov 4 2005, rather than default 1.4.0b1
+
+2006-05-24 Laurent Laville <pear@laurent-laville.org>
+
+    * bug fixes:
+    - Avoid to propagate wrong data content to the other package dependencies.
+    - php extension from package dependencies are now detected correctly.
+
+2006-05-21 Laurent Laville <pear@laurent-laville.org>
+
+    - reduce amount of data stored in session (see especially dependencies array)
+
+2006-05-20 Laurent Laville <pear@laurent-laville.org>
+
+    - The Configuration structure has changed
+    - Hack for PEAR::Config that cannot parse correctly boolean for XML container
+    - options filelistgenerator was renamed to plugingenerator,
+      and new filelistgenerator begin equal to PFM same option.
+    - getoption() signature changed
+    - new api : getPreferences() to retrieve easily options loaded
+
+2006-05-15 Laurent Laville <pear@laurent-laville.org>
+
+    - Following Christian Weiske comment, i've finally make the realpathnix()
+      and array_merge_recursive2(), renamed to array_merge_recursive(), static class methods
+      so they don't pollute the global namespace.
+
+2006-05-13 Laurent Laville <pear@laurent-laville.org>
+
+    - Add full support for 'group' and 'installconditions' package.xml version 2.0 tags
+
