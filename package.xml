@@ -24,26 +24,26 @@ list of dependencies (packages, extensions), and specific files roles.
   </maintainer>
   </maintainers>
  <release>
-  <version>0.4.0</version>
-  <date>2006-05-21</date>
+  <version>0.5.0</version>
+  <date>2006-05-29</date>
   <license>PHP License 3.01</license>
   <state>alpha</state>
-  <notes>* news
-- new api : getPreferences() to retrieve easily user options loaded.
-- options filelistgenerator was renamed to plugingenerator, and new filelistgenerator begin equal to PFM same option.
-- new configuration structure (more simple)
-  gui options are now only supported by PFM FE Web.
-- setOption() and getOption() did not used any more the xpath ability of PEAR::Config
+  <notes>* bug fixes:
+- Avoid to propagate wrong data content to the other package dependencies.
+- php extension from package dependencies are now detected correctly.
+- be sure to returns good data when getDefaults(&apos;dependencies&apos;) is called.
+- keep good version of pear installer when import a package 2.0
+- just for a new package from scratch pear installer is set to 1.4.3 minimum due to vunerability found on Nov 4 2005, rather than default 1.4.0b1
 
 * improvements
-- realpathnix() and array_merge_recursive2() are static class methods so they don&apos;t pollute the global namespace.
-- loadPreferences() is no more mandatory, and you can reload default options.
-- add a hack for PEAR::Config that cannot parse correctly boolean for XML container.
-- reduces amount of data stored in session
+- upgrades dependency to PEAR_PackageFileManager 1.6.0b1
+
+* news
+- introduces ChangeLog and NEWS files for history and quality assurance
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.2.0" optional="no"/>
-   <dep type="pkg" rel="ge" version="1.6.0a8" optional="no">PEAR_PackageFileManager</dep>
+   <dep type="pkg" rel="ge" version="1.6.0b1" optional="no">PEAR_PackageFileManager</dep>
    <dep type="pkg" rel="ge" version="1.10.6" optional="no">Config</dep>
    <dep type="pkg" rel="ge" version="1.9.0" optional="yes">Log</dep>
    <dep type="pkg" rel="ge" version="1.0.1" optional="yes">Var_Dump</dep>
@@ -59,15 +59,36 @@ list of dependencies (packages, extensions), and specific files roles.
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /Frontend -->
+    <file role="doc" name="ChangeLog"/>
     <file role="php" name="Frontend.php">
      <replace from="@package_version@" to="version" type="package-info"/>
      <replace from="@package_name@" to="name" type="package-info"/>
      <replace from="@api_version@" to="api-version" type="package-info"/>
     </file>
+    <file role="doc" name="NEWS"/>
    </dir> <!-- / -->
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>0.5.0</version>
+    <date>2006-05-29</date>
+    <license>PHP License 3.01</license>
+    <state>alpha</state>
+    <notes>* bug fixes:
+- Avoid to propagate wrong data content to the other package dependencies.
+- php extension from package dependencies are now detected correctly.
+- be sure to returns good data when getDefaults(&apos;dependencies&apos;) is called.
+- keep good version of pear installer when import a package 2.0
+- just for a new package from scratch pear installer is set to 1.4.3 minimum due to vunerability found on Nov 4 2005, rather than default 1.4.0b1
+
+* improvements
+- upgrades dependency to PEAR_PackageFileManager 1.6.0b1
+
+* news
+- introduces ChangeLog and NEWS files for history and quality assurance
+    </notes>
+   </release>
    <release>
     <version>0.4.0</version>
     <date>2006-05-21</date>
