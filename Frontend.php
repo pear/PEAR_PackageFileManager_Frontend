@@ -23,15 +23,6 @@ require_once 'PEAR/PackageFileManager2.php';
 require_once 'PEAR/Config.php';
 require_once 'Config.php';
 
-/**
- * Instance of PEAR_PackageFileManager_Frontend_{driver} class.
- *
- * @var    object
- * @since  0.1.0
- * @access private
- */
-$GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_SINGLETON'] = null;
-
 /**#@+
  * Error Codes
  *
@@ -185,7 +176,9 @@ class PEAR_PackageFileManager_Frontend
     function &singleton($driver = '', $packagedirectory = false, $pathtopackagefile = false,
                         $logger = false)
     {
-        if (!isset($GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_SINGLETON'])) {
+        static $instance;
+
+        if (!isset($instance)) {
             if ($logger) {
                 $s =& PEAR_ErrorStack::singleton('@package_name@');
                 $s->setLogger($logger);
@@ -211,9 +204,9 @@ class PEAR_PackageFileManager_Frontend
             if ($logger) {
                 $fe->setLogger($logger);
             }
-            $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_SINGLETON'] =& $fe;
+            $instance = $fe;
         }
-        return $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_SINGLETON'];
+        return $instance;
     }
 
     /**
@@ -830,7 +823,7 @@ class PEAR_PackageFileManager_Frontend
      * Returns default values of a package (imported or pre-set)
      *
      * @param  string  $type   category of data
-     * @return array
+     * @return mixed
      * @since  0.1.0
      * @access public
      */
@@ -1079,7 +1072,7 @@ class PEAR_PackageFileManager_Frontend
      *  - :
      * </pre>
      *
-     * @return array
+     * @return bool  TRUE if array of maintainer, FALSE otherwise
      * @since  0.1.0
      * @access private
      */
@@ -1091,7 +1084,7 @@ class PEAR_PackageFileManager_Frontend
             str_pad(__FUNCTION__ .'('. __LINE__ .')', 20, '.') .
             serialize($def)
         );
-        return $def;
+        return (is_array($def));
     }
 
     /**
@@ -1100,7 +1093,7 @@ class PEAR_PackageFileManager_Frontend
      *  - :
      * </pre>
      *
-     * @return array
+     * @return bool
      * @since  0.1.0
      * @access private
      */
@@ -1141,34 +1134,60 @@ class PEAR_PackageFileManager_Frontend
         $sess['dependencies'] = array();
         if ($sess['_newpackage'] === false) {
             $dependencies = $sess['pfm']->getDeps(true);
-            foreach($dependencies as $dgroup => $dgroupval) {
-                foreach($dgroupval as $dtype => $deps) {
-                    if (($dgroup == 'required') && ($dtype == 'php' || $dtype == 'pearinstaller')) {
-                        continue;
-                    }
-                    if (($dgroup == 'group') && ($dtype == 'attribs')) {
-                        $group = $deps;
-                        continue;
-                    }
-                    if (!isset($deps[0])) {
-                        $package = array($deps);
-                    } else {
-                        $package = $deps;
-                    }
-                    foreach($package as $dependency) {
-                        $dep = $dependency;
-                        $dep['type'] = $dgroup;
-                        $dep['group'] = isset($group) ? $group : false;
-                        if ($dtype == 'package') {
-                            $dep['name'] = $dependency['name'];
-                        } else {
-                            $dep['extension'] = $dependency['name'];
-                            unset($dep['name']);
+
+            foreach (array('required', 'optional') as $simpledep) {
+                foreach (array('package', 'subpackage', 'extension') as $type) {
+
+                    if (isset($dependencies[$simpledep][$type])) {
+                        $iter = $dependencies[$simpledep][$type];
+                        if (!isset($iter[0])) {
+                            $iter = array($iter);
                         }
-                        if (is_array($dependency['exclude'])) {
-                            $dep['exclude'] = $dependency['exclude'][0];
+                        foreach ($iter as $package) {
+                            $dep = $package;
+                            if ($type == 'extension') {
+                                $dep['extension'] = $package['name'];
+                                unset($dep['name']);
+                            } else {
+                                if (is_array($package['exclude'])) {
+                                    $dep['exclude'] = $package['exclude'][0];
+                                }
+                            }
+                            $dep['type'] = $simpledep;
+                            $dep['group'] = false;
+                            $sess['dependencies'][] = $dep;
                         }
-                        $sess['dependencies'][] = $dep;
+                    }
+                }
+            }
+            if (isset($dependencies['group'])) {
+                $groups = $dependencies['group'];
+                if (!isset($groups[0])) {
+                    $groups = array($groups);
+                }
+                foreach ($groups as $group) {
+                    foreach (array('package', 'subpackage', 'extension') as $type) {
+
+                        if (isset($group[$type])) {
+                            $iter = $group[$type];
+                            if (!isset($iter[0])) {
+                                $iter = array($iter);
+                            }
+                            foreach ($iter as $package) {
+                                $dep = $package;
+                                if ($type == 'extension') {
+                                    $dep['extension'] = $package['name'];
+                                    unset($dep['name']);
+                                } else {
+                                    if (is_array($package['exclude'])) {
+                                        $dep['exclude'] = $package['exclude'][0];
+                                    }
+                                }
+                                $dep['type'] = 'group';
+                                $dep['group'] = $group['attribs'];
+                                $sess['dependencies'][] = $dep;
+                            }
+                        }
                     }
                 }
             }
@@ -1186,8 +1205,7 @@ class PEAR_PackageFileManager_Frontend
             str_pad(__FUNCTION__ .'('. __LINE__ .')', 20, '.') .
             ' extensions=' . serialize($sess['extensions'])
         );
-        $def = array($sess['dependencies'], $sess['packages'], $sess['extensions']);
-        return $def;
+        return true;
     }
 
     /**
@@ -1196,7 +1214,7 @@ class PEAR_PackageFileManager_Frontend
      *  - :
      * </pre>
      *
-     * @return array
+     * @return bool
      * @since  0.1.0
      * @access private
      */
@@ -1207,30 +1225,38 @@ class PEAR_PackageFileManager_Frontend
 
         $filelist = $sess['pfm']->getFilelist(true);
         if (is_array($filelist)) {
-            $sess['roles'] = array();
             $dirs = array('.');
             $exts = array();
             $k = 0;
+            $dir_roles = $this->getOption('dir_roles');
+            $ext_roles = $this->getOption('roles');
+
             foreach($filelist as $fname => $contents) {
                 $sess['files']['mapping'][$k] = $option['packagedirectory'] . $fname;
-                $parts = pathinfo($contents['attribs']['name']);
-                if (!in_array($parts['dirname'], $dirs)) {
-                    $dirs[] = $parts['dirname'];
-                    $dir_roles = $this->getOption('dir_roles');
-                    if (array_key_exists($parts['dirname'], $dir_roles)) {
-                        $role = $dir_roles[$parts['dirname']];
-                    } else {
-                        $role = 'php';
+                $parts = pathinfo($fname);
+
+                if (isset($contents['attribs']['role'])) {
+                    $role = $contents['attribs']['role'];
+                } else {
+                    if (!in_array($parts['dirname'], $dirs)) {
+                        $dirs[] = $parts['dirname'];
+                        if (array_key_exists($parts['dirname'], $dir_roles)) {
+                            $role = $dir_roles[$parts['dirname']];
+                        } else {
+                            $role = 'php';
+                        }
                     }
-                    $sess['roles'][] = array('directory' => $parts['dirname'], 'extension' => '', 'role' => $role);
+                    if ($parts['dirname'] === '.') {
+                        if (isset($parts['extension']) && !in_array($parts['extension'], $exts)) {
+                            $exts[] = $parts['extension'];
+                            if (array_key_exists($parts['extension'], $ext_roles)) {
+                                $role = $ext_roles[$parts['extension']];
+                            } else {
+                                $role = $ext_roles['*'];
+                            }
+                        }
+                    }
                 }
-                if (isset($parts['extension']) && !in_array($parts['extension'], $exts)) {
-                    $exts[] = $parts['extension'];
-                    $sess['roles'][] = array('directory' => '', 'extension' => $parts['extension'],
-                        'role' => $contents['attribs']['role']
-                    );
-                }
-                $role = isset($parts['extension']) ? '' : $contents['attribs']['role'];
                 $sess['files'][$k] = array('ignore' => false,
                     'role' => $role, 'platform' => false, 'replacements' => array()
                 );
@@ -1250,7 +1276,7 @@ class PEAR_PackageFileManager_Frontend
             }
         }
 
-        return $sess['files'];
+        return true;
     }
 
     /**
@@ -1388,10 +1414,21 @@ class PEAR_PackageFileManager_Frontend
                 if (!isset($extension)) {
                     if ($type == 'group') {
                         $pkg->addDependencyGroup($group['name'], $group['hint']);
+                        $pkg->addGroupPackageDepWithChannel($type, $group['name'],
+                            $name, $channel, $min, $max, $recommended, $exclude);
+                    } else {
+                        $pkg->addPackageDepWithChannel($type, $name,
+                            $channel, $min, $max, $recommended, $exclude);
                     }
-                    $pkg->addPackageDepWithChannel($type, $name, $channel, $min, $max, $recommended, $exclude);
                 } else {
-                    $pkg->addExtensionDep($type, $extension, $min, $max, $recommended, $exclude);
+                    if ($type == 'group') {
+                        $pkg->addDependencyGroup($group['name'], $group['hint']);
+                        $pkg->addGroupExtensionDep($group['name'], $extension,
+                            $min, $max, $recommended, $exclude);
+                    } else {
+                        $pkg->addExtensionDep($type, $extension,
+                            $min, $max, $recommended, $exclude);
+                    }
                 }
             }
         }
@@ -1443,25 +1480,6 @@ class PEAR_PackageFileManager_Frontend
                     $pkg->addIgnoreToRelease($file);
                 }
             }
-        }
-
-        // get valid options from page 6
-        $pageName = $this->getPageName('page6');
-        if (isset($sess['roles'])) {
-            // recreate roles mapping (extensions and directories)
-            $dir_roles = $ext_roles = array();
-            foreach ($sess['roles'] as $k => $role) {
-                if (empty($role['extension'])) {
-                    $dir_roles[$role['dirname']] = $role['role'];
-                } else {
-                    $ext_roles[$role['extension']] = $role['role'];
-                }
-            }
-            $options = array_merge($pkg->getOptions(), array(
-                'dir_roles' => $dir_roles, 'roles' => $ext_roles
-            ));
-            $warn = $pkg->setOptions($options, true);
-            $this->pushWarning($warn);
         }
 
         // get valid options from page 7
