@@ -113,19 +113,6 @@ class PEAR_PackageFileManager_Frontend_Decorator extends PEAR_PackageFileManager
     }
 
     /**
-     * Decorator::getRoleList()
-     *
-     * @return array
-     * @since  0.1.0
-     * @access public
-     * @see    PEAR_PackageFileManager_Frontend::getRoleList()
-     */
-    function getRoleList($default)
-    {
-        return $this->fe->getRoleList($default);
-    }
-
-    /**
      * Decorator::getExceptionList()
      *
      * @return array
