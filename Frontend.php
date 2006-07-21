@@ -622,6 +622,7 @@ class PEAR_PackageFileManager_Frontend
      * @param  boolean  $default  if we get initial data set at first run
      * @param  boolean  $ignore   Either if you want all files or just ignored
      * @param  string   $plugin   PEAR_PackageFileManager filelist generator
+     * @return array
      * @since  0.1.0
      * @access public
      */
@@ -876,7 +877,6 @@ class PEAR_PackageFileManager_Frontend
             case 'maintainers':
             case 'dependencies':
             case 'files':
-            case 'roles':
                 if (!isset($values)) {
                     $values = $sess[$type];
                 }
@@ -1214,7 +1214,7 @@ class PEAR_PackageFileManager_Frontend
      *  - :
      * </pre>
      *
-     * @return bool
+     * @return array
      * @since  0.1.0
      * @access private
      */
@@ -1276,7 +1276,8 @@ class PEAR_PackageFileManager_Frontend
             }
         }
 
-        return true;
+        $def = array('_files' => $sess['files']);
+        return $def;
     }
 
     /**
