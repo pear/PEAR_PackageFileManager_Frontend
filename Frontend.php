@@ -1624,7 +1624,6 @@ class PEAR_PackageFileManager_Frontend
      * @param  array  $paArray1
      * @param  array  $paArray2
      * @return array
-     * @static
      * @access public
      * @since  0.1.0
      * @author brian at vermonster dot com
