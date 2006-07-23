@@ -1183,7 +1183,7 @@ class PEAR_PackageFileManager_Frontend
                                         $dep['exclude'] = $package['exclude'][0];
                                     }
                                 }
-                                $dep['type'] = 'group';
+                                $dep['type'] = 'group-'. $type;
                                 $dep['group'] = $group['attribs'];
                                 $sess['dependencies'][] = $dep;
                             }
