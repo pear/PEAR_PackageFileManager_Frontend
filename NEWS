@@ -1,3 +1,15 @@
+Changes since version 0.5.0 (2006-05-29)
+
+Changes to Frontend.php
+  - introduces new types (group-package, group-subpackage, group-extension)
+    to manage group dependencies
+  - be sure to have a default files list in session
+  - removed page 6 (roles)  management
+  - global var '_PEAR_PACKAGEFILEMANAGER_FRONTEND_SINGLETON' was removed
+    to avoid to pollute the global namespace.
+    Singleton pattern used a static variable (as it should be since beginning)
+  - better support of package xml <group> tag especially with package, subpackage, and extension
+
 Changes since version 0.4.0 (2006-05-21)
 
 Changes to Frontend.php
