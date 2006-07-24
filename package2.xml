@@ -46,7 +46,6 @@ list of dependencies (packages, extensions), and specific files roles.
 * news
 - implements &apos;extension&apos;, &apos;replace&apos; and &apos;role&apos; filters on new Filter Decorator
 - removed page 6 (roles)  management
-- reset button is un-available on replacements, dependencies and exceptions tabs
 - introduces new types (group-package, group-subpackage, group-extension)
   to manage group dependencies
  </notes>
@@ -130,7 +129,6 @@ list of dependencies (packages, extensions), and specific files roles.
 * news
 - implements &apos;extension&apos;, &apos;replace&apos; and &apos;role&apos; filters on new Filter Decorator
 - removed page 6 (roles)  management
-- reset button is un-available on replacements, dependencies and exceptions tabs
 - introduces new types (group-package, group-subpackage, group-extension)
   to manage group dependencies
    </notes>
