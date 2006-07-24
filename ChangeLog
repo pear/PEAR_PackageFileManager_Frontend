@@ -1,7 +1,15 @@
+2006-07-24 Laurent Laville <pear@laurent-laville.org>
+
+    * VERSION: Version 0.6.0 released.
+
+    - fixes package generation for group dependencies (package, supackage, extension)
+    - implements 'replace' filter on Filter Decorator
+
 2006-07-21 Laurent Laville <pear@laurent-laville.org>
 
     - Be sure to have a default files list in session
     - clean-up code
+    - implements 'extension' and 'role' filters on new Filter Decorator
 
 2006-07-19 Laurent Laville <pear@laurent-laville.org>
 
