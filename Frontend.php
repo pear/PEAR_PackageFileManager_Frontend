@@ -1409,12 +1409,17 @@ class PEAR_PackageFileManager_Frontend
 
         // get valid options from page 4
         if (isset($sess['dependencies'])) {
+            $groupname = '';
             foreach ($sess['dependencies'] as $dependency) {
                 unset($min, $max, $recommended, $exclude, $extension);
                 extract($dependency);
                 if (!isset($extension)) {
-                    if ($type == 'group') {
-                        $pkg->addDependencyGroup($group['name'], $group['hint']);
+                    if (substr($type, 0, 5) == 'group') {
+                        $type = substr($type, 6);
+                        if ($groupname != $group['name']) {
+                            $pkg->addDependencyGroup($group['name'], $group['hint']);
+                            $groupname = $group['name'];
+                        }
                         $pkg->addGroupPackageDepWithChannel($type, $group['name'],
                             $name, $channel, $min, $max, $recommended, $exclude);
                     } else {
@@ -1422,8 +1427,12 @@ class PEAR_PackageFileManager_Frontend
                             $channel, $min, $max, $recommended, $exclude);
                     }
                 } else {
-                    if ($type == 'group') {
-                        $pkg->addDependencyGroup($group['name'], $group['hint']);
+                    if (substr($type, 0, 5) == 'group') {
+                        $type = substr($type, 6);
+                        if ($groupname != $group['name']) {
+                            $pkg->addDependencyGroup($group['name'], $group['hint']);
+                            $groupname = $group['name'];
+                        }
                         $pkg->addGroupExtensionDep($group['name'], $extension,
                             $min, $max, $recommended, $exclude);
                     } else {
