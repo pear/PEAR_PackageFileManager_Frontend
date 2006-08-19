@@ -51,7 +51,7 @@ function varDump($var)
 session_start();
 
 // where to find package sources
-$pkgDir = 'E:/PEAR/Text/Text_Highlighter-0.6.9';
+$pkgDir = 'c:/PEAR/Text/Text_Highlighter-0.6.9';
 
 $pfmfe =& PEAR_PackageFileManager_Frontend::singleton('Null', $pkgDir);
 $pfmfe->setOption('baseinstalldir', 'Text');
@@ -70,11 +70,11 @@ $def = $pfmfe->getDefaults('release');
 varDump($def);
 
 echo '<h1>Maintainers </h1>';
-$def = $pfmfe->getDefaults('maintainers');
+$def = $pfmfe->getMaintList();
 varDump($def);
 
 echo '<h1>Dependencies </h1>';
-$def = $pfmfe->getDefaults('dependencies');
+$def = $pfmfe->getDepList();
 varDump($def);
 
 // cleansweep session data

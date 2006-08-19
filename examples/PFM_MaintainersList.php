@@ -65,7 +65,7 @@ function haltOnError($err)
 session_start();
 
 // where to find package sources
-$pkgDir = 'd:/php/pear/PEAR_PackageFileManager';
+$pkgDir = 'c:/php/pear/PEAR_PackageFileManager';
 
 PEAR_ErrorStack::staticPushCallback('haltOnError');
 
