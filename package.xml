@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0" packagerversion="1.4.10">
+<package version="1.0" packagerversion="1.4.11">
  <name>PEAR_PackageFileManager_Frontend</name>
  <summary>PEAR_PackageFileManager_Frontend, the singleton-based frontend for user input/output.</summary>
  <description>PEAR_PackageFileManager_Frontend is designed to act as a backend with all features required by frontend such as Web or Gtk2.
@@ -24,32 +24,23 @@ list of dependencies (packages, extensions), and specific files roles.
   </maintainer>
   </maintainers>
  <release>
-  <version>0.6.0</version>
-  <date>2006-07-24</date>
+  <version>0.7.0</version>
+  <date>2006-08-19</date>
   <license>PHP License 3.01</license>
   <state>alpha</state>
   <notes>* bugs:
-- better support of package xml &lt;group&gt; tag especially with package, subpackage, and extension
-- be sure to have a default files list in session
-- If you edit data of an existing package dependencies, this package was converted to extension
-
-* improvements
-- upgrades dependency to PEAR_PackageFileManager 1.6.0b2
-- fixed some phpdoc tags
-- global var &apos;_PEAR_PACKAGEFILEMANAGER_FRONTEND_SINGLETON&apos; was removed
-  to avoid to pollute the global namespace.
-  Singleton pattern used a static variable (as it should be since beginning).
+- fixed warning errors when use frontend from scratch
 
 * news
-- implements &apos;extension&apos;, &apos;replace&apos; and &apos;role&apos; filters on new Filter Decorator
-- removed page 6 (roles)  management
-- introduces new types (group-package, group-subpackage, group-extension)
-  to manage group dependencies
+- setFileList() method $plugin parameter is no more optional.
+
+* improvements
+- upgraded dependencies to PEAR_PackageFileManager 1.6.0b4 and Config 1.10.7
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.2.0" optional="no"/>
-   <dep type="pkg" rel="ge" version="1.6.0b2" optional="no">PEAR_PackageFileManager</dep>
-   <dep type="pkg" rel="ge" version="1.10.6" optional="no">Config</dep>
+   <dep type="pkg" rel="ge" version="1.6.0b4" optional="no">PEAR_PackageFileManager</dep>
+   <dep type="pkg" rel="ge" version="1.10.7" optional="no">Config</dep>
    <dep type="pkg" rel="ge" version="1.9.0" optional="yes">Log</dep>
    <dep type="pkg" rel="ge" version="1.0.1" optional="yes">Var_Dump</dep>
   </deps>
@@ -75,6 +66,21 @@ list of dependencies (packages, extensions), and specific files roles.
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>0.7.0</version>
+    <date>2006-08-19</date>
+    <license>PHP License 3.01</license>
+    <state>alpha</state>
+    <notes>* bugs:
+- fixed warning errors when use frontend from scratch
+
+* news
+- setFileList() method $plugin parameter is no more optional.
+
+* improvements
+- upgraded dependencies to PEAR_PackageFileManager 1.6.0b4 and Config 1.10.7
+    </notes>
+   </release>
    <release>
     <version>0.6.0</version>
     <date>2006-07-24</date>

@@ -1,3 +1,8 @@
+Changes since version 0.6.0 (2006-07-24)
+
+Changes to Frontend.php
+  - setFileList() method $plugin parameter is no more optional.
+
 Changes since version 0.5.0 (2006-05-29)
 
 Changes to Frontend.php

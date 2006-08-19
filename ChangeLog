@@ -1,3 +1,11 @@
+2006-08-19 Laurent Laville <pear@laurent-laville.org>
+
+    * VERSION: Version 0.7.0 released.
+
+    - fixed warning errors when use frontend from scratch
+    - setFileList() method $plugin parameter is no more optional.
+    - upgraded dependencies to PEAR_PackageFileManager 1.6.0b3 and Config 1.10.7
+
 2006-07-24 Laurent Laville <pear@laurent-laville.org>
 
     * VERSION: Version 0.6.0 released.
