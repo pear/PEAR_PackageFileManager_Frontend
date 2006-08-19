@@ -685,13 +685,16 @@ class PEAR_PackageFileManager_Frontend
      * @since  0.1.0
      * @access public
      */
-    function setFileList($plugin = 'file')
+    function setFileList($plugin)
     {
         $sess =& $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
         $sess['files'] = array();
+        if (!isset($plugin)) {
+            $plugin = 'file';
+        }
 
         $plugin = ucfirst(strtolower($plugin));
         $pkg = $sess['pfm'];
@@ -700,6 +703,14 @@ class PEAR_PackageFileManager_Frontend
 
         $generatorclass = 'PEAR_PackageFileManager_'. $plugin;
         $this->log('debug', __FUNCTION__ .'('. __LINE__ .') generator plugin='.$generatorclass);
+
+        if (!class_exists($generatorclass)) {
+            $classSource = str_replace('_', '/', $generatorclass) . '.php';
+            if (PEAR_PackageFileManager2::isIncludeable($classSource)) {
+                include_once $classSource;
+            }
+        }
+
         // get dir list corresponding to generator plugin
         $gen = new $generatorclass($pkg, $options);
         $fsMap = $gen->dirList(substr($options['packagedirectory'], 0, strlen($options['packagedirectory']) - 1));
