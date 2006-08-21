@@ -722,7 +722,8 @@ class PEAR_PackageFileManager_Frontend
 
         for ($i = 0; $i < $limit; $i++) {
             $sess['files'][] = array('ignore' => false,
-                'role' => '', 'platform' => false, 'eol' => false, 'replacements' => array()
+                'role' => '', 'platform' => false, 'eol' => false, 'replacements' => array(),
+                'installas' => ''
             );
         }
         $sess['files']['mapping'] = $fsMap;
@@ -1487,6 +1488,9 @@ class PEAR_PackageFileManager_Frontend
                     } else {
                         $pkg->addUnixEol($f);
                     }
+                }
+                if (!empty($file['installas'])) {
+                    $pkg->addInstallAs($f, $file['installas']);
                 }
                 foreach($file['replacements'] as $r => $replace) {
                     $f = str_replace($options['packagedirectory'], '', $sess['files']['mapping'][$k]);
