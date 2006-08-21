@@ -1,3 +1,9 @@
+2006-08-21 Laurent Laville <pear@laurent-laville.org>
+
+    * preparePackageFile() function allow now to :
+    - add support for tasks file : convert line endings (windows and unix)
+    - add support for install as name condition
+
 2006-08-19 Laurent Laville <pear@laurent-laville.org>
 
     * VERSION: Version 0.7.0 released.
