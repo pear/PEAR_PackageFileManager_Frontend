@@ -722,7 +722,7 @@ class PEAR_PackageFileManager_Frontend
 
         for ($i = 0; $i < $limit; $i++) {
             $sess['files'][] = array('ignore' => false,
-                'role' => '', 'platform' => false, 'replacements' => array()
+                'role' => '', 'platform' => false, 'eol' => false, 'replacements' => array()
             );
         }
         $sess['files']['mapping'] = $fsMap;
@@ -1475,10 +1475,18 @@ class PEAR_PackageFileManager_Frontend
                 if ($file['ignore'] === true) {
                     $pkg->addIgnore($sess['files']['mapping'][$k]);
                 }
+                $f = str_replace($options['packagedirectory'], '', $sess['files']['mapping'][$k]);
                 if ($file['platform'] == 'windows') {
-                    $win[] = str_replace($options['packagedirectory'], '', $sess['files']['mapping'][$k]);
+                    $win[] = $f;
                 } elseif ($file['platform'] == '(*ix|*ux)') {
-                    $nix[] = str_replace($options['packagedirectory'], '', $sess['files']['mapping'][$k]);
+                    $nix[] = $f;
+                }
+                if ($file['eol']) {
+                    if ($file['eol'] == 'windows') {
+                        $pkg->addWindowsEol($f);
+                    } else {
+                        $pkg->addUnixEol($f);
+                    }
                 }
                 foreach($file['replacements'] as $r => $replace) {
                     $f = str_replace($options['packagedirectory'], '', $sess['files']['mapping'][$k]);
