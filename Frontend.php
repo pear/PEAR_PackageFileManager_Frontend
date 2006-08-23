@@ -723,7 +723,7 @@ class PEAR_PackageFileManager_Frontend
         for ($i = 0; $i < $limit; $i++) {
             $sess['files'][] = array('ignore' => false,
                 'role' => '', 'platform' => false, 'eol' => false, 'replacements' => array(),
-                'installas' => ''
+                'installas' => false
             );
         }
         $sess['files']['mapping'] = $fsMap;
@@ -1235,7 +1235,7 @@ class PEAR_PackageFileManager_Frontend
         $sess =& $this->container();
         $option = $sess['pfm']->getOptions();
 
-        $filelist = $sess['pfm']->getFilelist(true);
+        $filelist = $sess['pfm']->getInstallationFilelist();
         if (is_array($filelist)) {
             $dirs = array('.');
             $exts = array();
@@ -1269,20 +1269,34 @@ class PEAR_PackageFileManager_Frontend
                         }
                     }
                 }
+                if (isset($contents['attribs']['install-as'])) {
+                     $as = $contents['attribs']['install-as'];
+                } else {
+                     $as = false;
+                }
                 $sess['files'][$k] = array('ignore' => false,
-                    'role' => $role, 'platform' => false, 'replacements' => array()
+                    'role' => $role, 'platform' => false, 'eol' => false, 'replacements' => array(),
+                    'installas' => $as
                 );
-                if (isset($contents['tasks:replace'])) {
-                    if (count($contents['tasks:replace']) == 1) {
-                        $contents['tasks:replace'] = array($contents['tasks:replace']);
+
+                $taskNs = $sess['pfm']->getTasksNs();
+                if (isset($contents[$taskNs.':replace'])) {
+                    if (count($contents[$taskNs.':replace']) == 1) {
+                        $contents[$taskNs.':replace'] = array($contents[$taskNs.':replace']);
                     }
-                    foreach($contents['tasks:replace'] as $r => $replace) {
+                    foreach($contents[$taskNs.':replace'] as $r => $replace) {
                         $sess['files'][$k]['replacements'][$r] = array(
                             'from' => $replace['attribs']['from'],
                             'type' => $replace['attribs']['type'],
                             'to'   => $replace['attribs']['to']
                         );
                     }
+                }
+                if (isset($contents[$taskNs.':windowseol'])) {
+                    $sess['files'][$k]['eol'] = 'windows';
+                }
+                if (isset($contents[$taskNs.':unixeol'])) {
+                    $sess['files'][$k]['eol'] = 'unix';
                 }
                 $k++;
             }
@@ -1489,7 +1503,7 @@ class PEAR_PackageFileManager_Frontend
                         $pkg->addUnixEol($f);
                     }
                 }
-                if (!empty($file['installas'])) {
+                if ($file['installas']) {
                     $pkg->addInstallAs($f, $file['installas']);
                 }
                 foreach($file['replacements'] as $r => $replace) {
