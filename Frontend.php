@@ -1515,15 +1515,14 @@ class PEAR_PackageFileManager_Frontend
             }
             if (count($win)) {
                 $pkg->setOSInstallCondition('windows');
+                if (count($nix)) {
+                    foreach($nix as $file) {
+                        $pkg->addIgnoreToRelease($file);
+                    }
+                }
+
+                $pkg->addRelease();
                 foreach($win as $file) {
-                    $pkg->addIgnoreToRelease($file);
-                }
-            }
-            if (count($nix)) {
-                if (count($win)) {
-                    $pkg->addRelease();
-                }
-                foreach($nix as $file) {
                     $pkg->addIgnoreToRelease($file);
                 }
             }
