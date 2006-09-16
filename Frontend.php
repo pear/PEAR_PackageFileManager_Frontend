@@ -125,7 +125,6 @@ class PEAR_PackageFileManager_Frontend
         'dir_roles'          => array(),
         'changelogoldtonew'  => false,
         'simpleoutput'       => false,
-        'exportcompatiblev1' => false,
         'baseinstalldir'     => '',
         'package_type'       => array(),
         'stability'          => array(),
@@ -293,7 +292,6 @@ class PEAR_PackageFileManager_Frontend
             'dir_roles'          => $pfmOptions['dir_roles'],
             'changelogoldtonew'  => $pfmOptions['changelogoldtonew'],
             'simpleoutput'       => $pfmOptions['simpleoutput'],
-            'exportcompatiblev1' => false,
             'baseinstalldir'     => '/',
             'package_type'       => array('php','extsrc','extbin'),
             'stability'          => array('snapshot','devel','alpha','beta','stable'),
@@ -1568,7 +1566,7 @@ class PEAR_PackageFileManager_Frontend
      * @access public
      * @return mixed
      */
-    function buildPackageFile($debug, $exportV1, $changelogOldToNew, $simpleOutput)
+    function buildPackageFile($debug, $changelogOldToNew, $simpleOutput)
     {
         $pkg = $this->preparePackageFile();
 
@@ -1588,12 +1586,6 @@ class PEAR_PackageFileManager_Frontend
             $preview = ob_get_contents();
             ob_end_clean();
         } else {
-            if ($exportV1) {
-                $pkgV1 = &$pkg->exportCompatiblePackageFile1();
-                $this->pushWarning($pkgV1);
-                $warn = $pkgV1->writePackageFile($debug);
-                $this->pushWarning($warn);
-            }
             $warn = $pkg->writePackageFile($debug);
         }
         $this->pushWarning($warn);

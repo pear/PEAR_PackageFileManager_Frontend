@@ -1,3 +1,7 @@
+2006-09-16 Laurent Laville <pear@laurent-laville.org>
+
+    * buildPackageFile() function signature changed. Removed param #2 $exportV1
+
 2006-08-21 Laurent Laville <pear@laurent-laville.org>
 
     * preparePackageFile() function allow now to :

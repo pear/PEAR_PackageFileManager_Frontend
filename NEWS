@@ -3,6 +3,7 @@ Changes since version 0.7.0 (2006-08-19)
 Changes to Frontend.php
   - add support for tasks file : convert line endings (windows and unix)
   - add support for install as name condition
+  - remove support of package xml 1.0 generation
 
 Changes since version 0.6.0 (2006-07-24)
 
