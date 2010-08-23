@@ -308,8 +308,8 @@ class PEAR_PackageFileManager_Frontend
                         $custom[$kdef] = false;
                     } else {
                         $a = $custom[$kdef];
-                        $a = eregi_replace('^false$', '0', trim($a));
-                        $a = eregi_replace('^true$' , '1', trim($a));
+                        $a = preg_replace('/^false$/i', '0', trim($a));
+                        $a = preg_replace('/^true$/i' , '1', trim($a));
                         $custom[$kdef] = (bool) $a;
                     }
                 }
