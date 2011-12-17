@@ -2,7 +2,7 @@
 /**
  * Decorator for PEAR_PackageFileManager_Frontend
  *
- * PHP versions 4 and 5
+ * PHP versions 5
  *
  * LICENSE: This source file is subject to version 3.01 of the PHP license
  * that is available through the world-wide-web at the following URI:
@@ -51,9 +51,9 @@ class PEAR_PackageFileManager_Frontend_Decorator extends PEAR_PackageFileManager
      * @since  0.1.0
      * @access public
      */
-    function PEAR_PackageFileManager_Frontend_Decorator(&$frontend)
+    function __construct($frontend)
     {
-        $this->fe =& $frontend;
+        $this->fe = $frontend;
     }
 
     /**

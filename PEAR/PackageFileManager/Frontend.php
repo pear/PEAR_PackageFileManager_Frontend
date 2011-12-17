@@ -2,7 +2,7 @@
 /**
  * PEAR_PackageFileManager_Frontend, the singleton-based frontend for user input/output.
  *
- * PHP versions 4 and 5
+ * PHP versions 5
  *
  * LICENSE: This source file is subject to version 3.01 of the PHP license
  * that is available through the world-wide-web at the following URI:
@@ -152,7 +152,7 @@ class PEAR_PackageFileManager_Frontend
      * @access public
      * @since  0.1.0
      */
-    function PEAR_PackageFileManager_Frontend($driver, $packagedirectory, $pathtopackagefile)
+    public function __construct($driver, $packagedirectory, $pathtopackagefile)
     {
         $this->packagedirectory  = $packagedirectory;
         $this->pathtopackagefile = $pathtopackagefile;
@@ -172,14 +172,14 @@ class PEAR_PackageFileManager_Frontend
      * @since  0.1.0
      * @static
      */
-    function &singleton($driver = '', $packagedirectory = false, $pathtopackagefile = false,
+    function singleton($driver = '', $packagedirectory = false, $pathtopackagefile = false,
                         $logger = false)
     {
         static $instance;
 
         if (!isset($instance)) {
             if ($logger) {
-                $s =& PEAR_ErrorStack::singleton('@package_name@');
+                $s = PEAR_ErrorStack::singleton('@package_name@');
                 $s->setLogger($logger);
             }
 
@@ -192,14 +192,14 @@ class PEAR_PackageFileManager_Frontend
                 }
             }
             if (!class_exists($uiclass)) {
-                $err =& PEAR_ErrorStack::staticPush('@package_name@',
+                $err = PEAR_ErrorStack::staticPush('@package_name@',
                     PEAR_PACKAGEFILEMANAGER_FRONTEND_NODRIVER, 'error',
                     array('driver' => $driver),
                     $GLOBALS['_PEAR_PACKAGEFILEMANAGER_FRONTEND_ERRORS'][PEAR_PACKAGEFILEMANAGER_FRONTEND_NODRIVER]
                     );
                 return $err;
             }
-            $fe =& new $uiclass($driver, $packagedirectory, $pathtopackagefile);
+            $fe = new $uiclass($driver, $packagedirectory, $pathtopackagefile);
             if ($logger) {
                 $fe->setLogger($logger);
             }
@@ -216,7 +216,7 @@ class PEAR_PackageFileManager_Frontend
      * @access public
      * @since  0.1.0
      */
-    function setLogger(&$logger)
+    function setLogger($logger)
     {
         if (isset($logger) && (!is_object($logger) || !method_exists($logger, 'log'))) {
             PEAR_ErrorStack::staticPush('@package_name@',
@@ -226,9 +226,9 @@ class PEAR_PackageFileManager_Frontend
                 );
             return false;
         }
-        $s =& PEAR_ErrorStack::singleton('@package_name@');
+        $s = PEAR_ErrorStack::singleton('@package_name@');
         $s->setLogger($logger);
-        $this->_logger = &$logger;
+        $this->_logger = $logger;
         return true;
     }
 
@@ -240,7 +240,7 @@ class PEAR_PackageFileManager_Frontend
      * @access public
      * @since  0.1.0
      */
-    function loadPreferences(&$config)
+    function loadPreferences($config)
     {
         // user options configuration (temporary)
         $conf = new Config();
@@ -257,7 +257,7 @@ class PEAR_PackageFileManager_Frontend
                 // in case no parser options are given
                 $options = array();
             }
-            $res =& $conf->parseConfig($source, $type, $options);
+            $res = $conf->parseConfig($source, $type, $options);
             $fail = PEAR::isError($res);
 
         } elseif (is_bool($config) && $config === false) {
@@ -278,7 +278,7 @@ class PEAR_PackageFileManager_Frontend
         }
 
         if  (!isset($custom)) {
-            $root =& $conf->getRoot();
+            $root = $conf->getRoot();
             $options = $root->toArray(false);
             $custom = $options['root']['settings'];
         }
@@ -448,7 +448,7 @@ class PEAR_PackageFileManager_Frontend
      * @since  0.1.0
      * @author Ian Eure <ieure@php.net>  from StackThunk 0.9.0
      */
-    function repackagePEAR_Error(&$error)
+    function repackagePEAR_Error($error)
     {
         static $map;
         if (!isset($map)) {
@@ -470,7 +470,7 @@ class PEAR_PackageFileManager_Frontend
         // Strip this function from the trace
         if (is_array($error->backtrace)) {
             array_shift($error->backtrace);
-            $error->userinfo['backtrace'] =& $error->backtrace;
+            $error->userinfo['backtrace'] = $error->backtrace;
         }
         PEAR_ErrorStack::staticPush('@package_name@',
             $error->code, $map[$error->level],
@@ -508,7 +508,7 @@ class PEAR_PackageFileManager_Frontend
      * @access public
      * @since  0.1.0
      */
-    function &container($reset = false)
+    function container($reset = false)
     {
         $name = '_' . $this->driver . '_container';
         if (!isset($_SESSION[$name]) || $reset) {
@@ -542,7 +542,7 @@ class PEAR_PackageFileManager_Frontend
             return false;
         }
 
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -572,7 +572,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function addMaintainer($role, $handle, $name, $email, $active = 'yes')
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -599,7 +599,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function deleteMaintainer($handle)
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -626,7 +626,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function getFileList($default = false, $ignore = false, $plugin = 'file')
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -685,7 +685,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function setFileList($plugin)
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -737,7 +737,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function getDepList($default = false)
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -760,7 +760,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function getRoleList($default = false)
     {
-        $sess =& $this->container();
+        $sess = $this->container();
 
         if (!isset($sess['roles'])) {
             $filelist = $this->getFileList();
@@ -825,7 +825,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function getExceptionList()
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         $filelist = $this->getFileList();
         return $filelist;
     }
@@ -878,7 +878,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function setDefaults($type, $values = null, $overwrite = false)
     {
-        $sess =& $this->container();
+        $sess = $this->container();
 
         if (isset($sess['defaults']["_$type"]) && !$overwrite) {
             return;
@@ -952,7 +952,7 @@ class PEAR_PackageFileManager_Frontend
                     $packagefile .= 'package.xml';
                 }
             }
-            $pkg = &PEAR_PackageFileManager2::importFromPackageFile1($packagefile, $optionsUpdate);
+            $pkg = PEAR_PackageFileManager2::importFromPackageFile1($packagefile, $optionsUpdate);
             if (PEAR::isError($pkg)) {
                 $this->repackagePEAR_Error($pkg);
                 $newPackage = true;
@@ -978,8 +978,8 @@ class PEAR_PackageFileManager_Frontend
             str_pad(__FUNCTION__ .'('. __LINE__ .')', 20, '.') .
             $source);
 
-        $sess =& $this->container();
-        $sess['pfm'] =& $pkg;
+        $sess = $this->container();
+        $sess['pfm'] = $pkg;
         $sess['_newpackage'] = $newPackage;
         $options = $pkg->getOptions();
         $this->log('debug',
@@ -1040,7 +1040,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function _getRelease()
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         $options = $sess['pfm']->getOptions();
 
         if ($sess['_newpackage']) {
@@ -1088,7 +1088,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function _getMaintainers()
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         $def = $sess['pfm']->getMaintainers();
         $this->log('debug',
             str_pad(__FUNCTION__ .'('. __LINE__ .')', 20, '.') .
@@ -1109,7 +1109,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function _getDependencies()
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         if (!isset($sess['pfm'])) {
             $this->_getPackage();
         }
@@ -1124,7 +1124,7 @@ class PEAR_PackageFileManager_Frontend
             if ($packages) {
                 sort($packages, SORT_ASC);
                 foreach ($packages as $package) {
-                    $info = &$pearRegistry->getPackage($package, $channel);
+                    $info = $pearRegistry->getPackage($package, $channel);
                     if (is_object($info)) {
                         $name = $info->getPackage();
                     } else {
@@ -1230,7 +1230,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function _getReplacements()
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         $option = $sess['pfm']->getOptions();
 
         $filelist = $sess['pfm']->getInstallationFilelist();
@@ -1315,7 +1315,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function exportValue($pageName, $elementName)
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         return isset($sess['values'][$pageName][$elementName])? $sess['values'][$pageName][$elementName]: null;
     }
 
@@ -1340,7 +1340,7 @@ class PEAR_PackageFileManager_Frontend
      */
     function preparePackageFile()
     {
-        $sess =& $this->container();
+        $sess = $this->container();
         $pkg = $sess['pfm'];
 
         // get valid options from page 1

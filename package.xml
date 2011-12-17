@@ -21,10 +21,10 @@ list of dependencies (packages, extensions), and specific files roles.
   <active>yes</active>
  </lead>
  <date>2011-12-17</date>
- <time>22:34:09</time>
+ <time>22:49:06</time>
  <version>
-  <release>0.7.0</release>
-  <api>0.7.0</api>
+  <release>0.8.0</release>
+  <api>0.8.0</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -32,25 +32,21 @@ list of dependencies (packages, extensions), and specific files roles.
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License 3.01</license>
  <notes>
-* bugs:
-- fixed warning errors when use frontend from scratch
-
-* news
-- setFileList() method $plugin parameter is no more optional.
-
-* improvements
-- upgraded dependencies to PEAR_PackageFileManager 1.6.0b4 and Config 1.10.7
+QA release
+Fix directory structure
+Rely only on package 2.0
+PHP 5 as a minimum dependency
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <file baseinstalldir="/" md5sum="fb7c9d4f633f9449d6de5478623f8df7" name="examples/PFM_MaintainersList.php" role="doc" />
    <file baseinstalldir="/" md5sum="c526996eb075a8b8982a935108796b46" name="examples/THL_Infos.php" role="doc" />
-   <file baseinstalldir="/" md5sum="e9f01010458d535749936c4cbbf00478" name="PEAR/PackageFileManager/Frontend.php" role="php">
+   <file baseinstalldir="/" md5sum="06a7d8fa74ba3d155ad712c4f5e5968e" name="PEAR/PackageFileManager/Frontend.php" role="php">
     <tasks:replace from="@package_version@" to="version" type="package-info" />
     <tasks:replace from="@package_name@" to="name" type="package-info" />
     <tasks:replace from="@api_version@" to="api-version" type="package-info" />
    </file>
-   <file baseinstalldir="/" md5sum="2e00f9a6ba9526c3c0f8bfab4d3cec8d" name="PEAR/PackageFileManager/Frontend/Decorator.php" role="php">
+   <file baseinstalldir="/" md5sum="6b61f525cf0a172b2ff4547796c16bc4" name="PEAR/PackageFileManager/Frontend/Decorator.php" role="php">
     <tasks:replace from="@package_version@" to="version" type="package-info" />
    </file>
    <file baseinstalldir="/" md5sum="f484355cd8d4c8060760adc96ad93c13" name="ChangeLog" role="doc" />
@@ -61,7 +57,7 @@ list of dependencies (packages, extensions), and specific files roles.
  <dependencies>
   <required>
    <php>
-    <min>4.2.0</min>
+    <min>5.0.0</min>
    </php>
    <pearinstaller>
     <min>1.4.3</min>
@@ -248,6 +244,24 @@ TODO
 
 * improvements
 - upgraded dependencies to PEAR_PackageFileManager 1.6.0b4 and Config 1.10.7
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>0.8.0</release>
+    <api>0.8.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2011-12-17</date>
+   <license uri="http://www.php.net/license/3_01.txt">PHP License 3.01</license>
+   <notes>
+QA release
+Fix directory structure
+Rely only on package 2.0
+PHP 5 as a minimum dependency
    </notes>
   </release>
  </changelog>
