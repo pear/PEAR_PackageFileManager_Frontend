@@ -21,7 +21,7 @@ list of dependencies (packages, extensions), and specific files roles.
   <active>yes</active>
  </lead>
  <date>2011-12-17</date>
- <time>22:49:06</time>
+ <time>23:04:48</time>
  <version>
   <release>0.8.0</release>
   <api>0.8.0</api>
@@ -36,6 +36,7 @@ QA release
 Fix directory structure
 Rely only on package 2.0
 PHP 5 as a minimum dependency
+Bug #17772 Patch: Avoiding eregi in favor of PCRE functions
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -262,6 +263,7 @@ QA release
 Fix directory structure
 Rely only on package 2.0
 PHP 5 as a minimum dependency
+Bug #17772 Patch: Avoiding eregi in favor of PCRE functions
    </notes>
   </release>
  </changelog>
