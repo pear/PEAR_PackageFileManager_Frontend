@@ -8,7 +8,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "PEAR_PackageFileManager_Frontend": "./"
+            "PEAR": "./"
         }
     },
     "description": "More info available on: http://pear.php.net/package/PEAR_PackageFileManager_Frontend",
@@ -23,9 +23,13 @@
     },
     "type": "library",
     "require": {
-        "pear/pear_exception": "*"
+        "pear/pear_exception": "*",
+        "pear/pear_packagefilemanager": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
+    },
+    "suggest": {
+        "pear/log": "Install optionally via your project's composer.json"
     }
 }
