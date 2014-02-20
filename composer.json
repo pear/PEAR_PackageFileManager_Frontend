@@ -1,0 +1,35 @@
+{
+    "authors": [
+        {
+            "email": "pear@laurent-laville.org",
+            "name": "Laurent Laville",
+            "role": "Lead"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "PEAR": "./"
+        }
+    },
+    "description": "More info available on: http://pear.php.net/package/PEAR_PackageFileManager_Frontend",
+    "include-path": [
+        "./"
+    ],
+    "license": "PHP License 3.01",
+    "name": "pear/pear_packagefilemanager_frontend",
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=PEAR_PackageFileManager_Frontend",
+        "source": "https://github.com/pear/PEAR_PackageFileManager_Frontend"
+    },
+    "type": "library",
+    "require": {
+        "pear/pear_exception": "*",
+        "pear/pear_packagefilemanager": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "suggest": {
+        "pear/log": "Install optionally via your project's composer.json"
+    }
+}
